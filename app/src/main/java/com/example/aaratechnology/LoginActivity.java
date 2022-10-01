@@ -3,6 +3,7 @@ package com.example.aaratechnology;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        userexist();
         binding.password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,11 +66,18 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful())
                 {
                     if(loginResponse.getResponse_code().equals("200")){
+
+                        SharedPreferences sp = getSharedPreferences("login",MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("roll_id",1);
+                        editor.putString("email",email);
+                        editor.commit();
+                        editor.apply();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         Toast.makeText(LoginActivity.this, "login successfully", Toast.LENGTH_SHORT).show();
-
+                        finish();
                     }
                 }
                 else{
@@ -84,5 +93,15 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
+    }
+    void userexist(){
+        SharedPreferences sp = getSharedPreferences("login",MODE_PRIVATE);
+        if(sp.contains("roll_id") && sp.contains("email")){
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        }
+        else
+            Toast.makeText(this, "Please login", Toast.LENGTH_SHORT).show();
     }
 }
